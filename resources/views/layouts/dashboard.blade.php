@@ -168,22 +168,18 @@
                                 </a>
 
                                 <hr class="my-1">
-
-                                <form method="POST" action="">
-                                    @csrf
-                                    <button type="submit"
-                                        class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
-                                        <div class="flex items-center">
-                                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                                                </path>
-                                            </svg>
-                                            Logout
-                                        </div>
-                                    </button>
-                                </form>
+                                <a href="{{ route('logout') }}"
+                                    class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">
+                                    <div class="flex items-center">
+                                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                            </path>
+                                        </svg>
+                                        Logout
+                                    </div>
+                                </a>
                             </div>
                         </div>
                     </div>
