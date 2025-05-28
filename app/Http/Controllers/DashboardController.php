@@ -9,6 +9,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $articles = Article::latest('created_at')->take(5)->get();
         $totalArticles = Article::count();
         $totalCategories = 2;
         $totalUsers = 2;
@@ -18,7 +19,8 @@ class DashboardController extends Controller
             'totalArticles',
             'totalCategories',
             'totalUsers',
-            'todayViews'
+            'todayViews',
+            'articles'
         ));
     }
 }
