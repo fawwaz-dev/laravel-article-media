@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SendOtpMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -40,9 +42,14 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user);
+        $otp_code = mt_rand(100000, 999999);
+        $user->otp_code = $otp_code;
+        $user->otp_expires_at = now()->addMinutes(5);
+        $user->save();
 
-        return redirect()->route('dashboard');
+        Mail::to($user->email)->send(new SendOtpMail($otp_code, $user));
+
+        return redirect()->route('otp.show', ['email' => $user->email])->with('success', 'Registrasi berhasil. Silakan verifikasi OTP.');
     }
 
     public function login(Request $request)
