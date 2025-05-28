@@ -104,6 +104,37 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 bg-white">
+                        @forelse ($articles as $key => $article)
+                            <tr>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ $article->title ?? '-' }}
+                                    </div>
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <span
+                                        class="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800">
+                                        {{ $article->category ?? '-' }}
+                                    </span>
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <span
+                                        class="{{ $article->status == 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }} inline-flex rounded-full px-2 py-1 text-xs font-semibold capitalize">
+                                        {{ $article->status ?? '-' }}
+                                    </span>
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                    {{ $article->created_at?->format('M d, Y') ?? '-' }}
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                                    <a href="{{ route('articles.edit', $article->slug ?? '') }}"
+                                        class="mr-3 text-blue-600 hover:text-blue-900">Edit</a>
+                                    <a href="{{ route('articles.destroy', $article->slug ?? '') }}"
+                                        class="text-red-600 hover:text-red-900">Delete</a>
+                                </td>
+                            </tr>
+                        @empty
+                        @endforelse
                         <tr>
                             <td class="whitespace-nowrap px-6 py-4">
                                 <div class="text-sm font-medium text-gray-900">Getting Started with Laravel</div>
