@@ -32,6 +32,15 @@ class ArticleController extends Controller
             'content' => 'required',
             'status' => 'required|in:draft,published',
             'featured_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'title.required' => 'Title is required.',
+            'title.unique' => 'Title already exists.',
+            'content.required' => 'Content is required.',
+            'status.required' => 'Status is required.',
+            'status.in' => 'Status must be "draft" or "published".',
+            'featured_image.image' => 'Featured image must be an image.',
+            'featured_image.mimes' => 'Featured image must be in JPEG, PNG, JPG, or GIF format.',
+            'featured_image.max' => 'Featured image size must not exceed 2MB.',
         ]);
 
         $article = new Article();
@@ -68,6 +77,15 @@ class ArticleController extends Controller
             'content' => 'required',
             'status' => 'required|in:draft,published',
             'featured_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'title.required' => 'Title is required.',
+            'title.unique' => 'Title already exists.',
+            'content.required' => 'Content is required.',
+            'status.required' => 'Status is required.',
+            'status.in' => 'Status must be "draft" or "published".',
+            'featured_image.image' => 'Featured image must be an image.',
+            'featured_image.mimes' => 'Featured image must be in JPEG, PNG, JPG, or GIF format.',
+            'featured_image.max' => 'Featured image size must not exceed 2MB.',
         ]);
 
         $article->title = $request->input('title');
