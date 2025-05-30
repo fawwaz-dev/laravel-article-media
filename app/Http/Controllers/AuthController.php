@@ -78,10 +78,15 @@ class AuthController extends Controller
 
     public function logout()
     {
-        Auth::logout();
-        session()->invalidate();
-        session()->regenerateToken();
+        if (Auth::check()) {
+            Auth::logout();
+            session()->invalidate();
+            session()->regenerateToken();
 
-        return redirect()->route('auth.login');
+            return redirect()->route('auth.login');
+        }
+        return redirect()->route('auth.login')->withErrors([
+            'error' => 'Anda belum login',
+        ]);;
     }
 }

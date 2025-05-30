@@ -58,32 +58,18 @@ class OTPController extends Controller
         );
         $user = User::where('email', $request->email)->first();
 
-        $otp_code = rand(100000, 999999);
-        $user->otp_code = $otp_code;
-        $user->otp_expires_at = now()->addMinutes(5);
-        $user->save();
 
-        Mail::to($user->email)->send(new SendOtpMail($otp_code, $user));
+        if ($user->otp_code) {
+            if ($user->otp_code && now()->lt($user->otp_expires_at)) {
+                return back()->withErrors(['error' => 'OTP belum kadaluarsa.'])->withInput();
+            }
 
-        return view('auth.verify-otp');
-    }
-
-    public function resend(Request $request)
-    {
-        $request->validate(
-            [
-                'email' => 'required|email|exists:users',
-            ],
-            [
-                'email.required' => 'Email harus diisi.',
-                'email.email' => 'Email tidak valid.',
-                'email.exists' => 'Email tidak terdaftar.',
-            ]
-        );
-        $user = User::where('email', $request->email)->first();
-        $user->otp_code = null;
-        $user->otp_expires_at = null;
-        $user->save();
+            if ($user->otp_code && now()->gt($user->otp_expires_at)) {
+                $user->otp_code = null;
+                $user->otp_expires_at = null;
+                $user->save();
+            }
+        }
 
         $otp_code = rand(100000, 999999);
         $user->otp_code = $otp_code;
@@ -91,6 +77,7 @@ class OTPController extends Controller
         $user->save();
 
         Mail::to($user->email)->send(new SendOtpMail($otp_code, $user));
+
         return view('auth.verify-otp');
     }
 }

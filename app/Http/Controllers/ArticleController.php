@@ -6,8 +6,13 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+
 class ArticleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('role:admin')->except('index', 'show');
+    }
     public function index()
     {
         $articles = Article::orderBy('updated_at', 'desc')->paginate(10);

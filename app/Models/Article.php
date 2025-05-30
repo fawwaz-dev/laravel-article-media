@@ -32,6 +32,11 @@ class Article extends Model implements HasMedia
         'published_at' => 'datetime',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('16-9')

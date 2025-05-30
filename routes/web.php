@@ -13,18 +13,19 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     Route::get('verify-otp', [OTPController::class, 'show'])->name('otp.show');
-    Route::post('verify-otp', [OTPController::class, 'verify'])->name('otp.verify');
+    Route::post('verify-otp', action: [OTPController::class, 'verify'])->name('otp.verify');
     Route::post('send-otp', [OTPController::class, 'send'])->name('otp.send');
-    Route::post('resend-otp', [OTPController::class, 'resend'])->name('otp.resend');
 });
 
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::group(['middleware' => 'auth'], function () {
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('articles', ArticleController::class);
+    Route::resource('articles', ArticleController::class)->parameters([
+        'articles' => 'slug'
+    ]);
 });
