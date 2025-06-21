@@ -171,6 +171,7 @@ class ArticleControllerTest extends TestCase
             'status' => 'invalid',
             '_token' => csrf_token(),
         ]);
+        
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['title', 'slug', 'content', 'status']);
