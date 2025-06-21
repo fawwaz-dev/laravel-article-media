@@ -7,7 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\PersonalAccessToken;
 use Laravel\Sanctum\Sanctum;
 
-class AppServiceProvider extends ServiceProvider
+class BroadcastServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -22,9 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
-
-        Broadcast::routes(['middleware' => ['auth']]);
+        Broadcast::routes(['middleware' => ['auth:admin']]);
 
         require base_path('routes/channels.php');
     }

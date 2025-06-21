@@ -4,9 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - Blog CMS</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script>
+        window.Laravel = {
+            csrfToken: '{{ csrf_token() }}',
+            user: @json(auth()->user())
+        };
+    </script>
 </head>
 
 <body class="bg-gray-50">
@@ -106,14 +113,51 @@
                     <!-- Right side items -->
                     <div class="flex items-center space-x-4">
                         <!-- Notifications -->
-                        <button class="relative text-gray-500 hover:text-gray-700">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 17h5l-5 5v-5zM10.5 3.5a6 6 0 0 1 6 6v2l1.5 3h-15l1.5-3v-2a6 6 0 0 1 6-6z">
-                                </path>
-                            </svg>
-                            <span class="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-500"></span>
-                        </button>
+                        <div class="relative">
+                            <button id="notification-toggle"
+                                class="relative text-gray-500 hover:text-gray-700 focus:outline-none">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 17h5l-5 5v-5zM10.5 3.5a6 6 0 0 1 6 6v2l1.5 3h-15l1.5-3v-2a6 6 0 0 1 6-6z">
+                                    </path>
+                                    @if (auth()->user()->unreadNotifications->count() > 0)
+                                        <span
+                                            class="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                                            {{ auth()->user()->unreadNotifications->count() }}
+                                        </span>
+                                    @endif
+                                </svg>
+                            </button>
+                            <!-- Dropdown -->
+                            <div id="notification-dropdown"
+                                class="absolute right-0 z-10 mt-2 hidden w-80 rounded-lg bg-white shadow-lg">
+                                <div class="border-b p-4">
+                                    <h3 class="text-lg font-semibold">Notifikasi</h3>
+                                </div>
+                                <ul id="notification-list" class="max-h-64 overflow-y-auto">
+                                    @forelse (auth()->user()->notifications as $notification)
+                                        <li
+                                            class="{{ $notification->read_at ? 'bg-gray-50' : 'bg-blue-50' }} p-4 hover:bg-gray-100">
+                                            <p class="text-sm">{{ $notification->data['message'] }}</p>
+                                            <p class="text-xs text-gray-500">
+                                                {{ $notification->created_at->diffForHumans() }}</p>
+                                            @if (!$notification->read_at)
+                                                <button class="mark-read text-xs text-blue-600 hover:underline"
+                                                    data-id="{{ $notification->id }}">
+                                                    Tandai sebagai dibaca
+                                                </button>
+                                            @endif
+                                        </li>
+                                    @empty
+                                        <li class="p-4 text-sm text-gray-500">Tidak ada notifikasi</li>
+                                    @endforelse
+                                </ul>
+                                <div class="border-t p-4">
+                                    <button id="mark-all-read" class="text-sm text-blue-600 hover:underline">Tandai
+                                        semua sebagai dibaca</button>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Profile Dropdown -->
                         <div x-data="{ profileOpen: false }" class="relative">
@@ -202,5 +246,20 @@
         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
         class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"></div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('Echo:', window.Echo); // Debug: pastikan Echo terdefinisi
+        console.log('User:', window.Laravel.user); // Debug: pastikan user terdefinisi
+        if (window.Echo && window.Laravel.user) {
+            window.Echo.channel('articles')
+                .listen('ArticlePublished', (e) => {
+                    console.log('Notifikasi diterima:', e); // Debug
+                    alert(e.message); // Ganti dengan UI notifikasi
+                });
+        } else {
+            console.error('Echo atau pengguna tidak terdefinisi');
+        }
+    });
+</script>
 
 </html>

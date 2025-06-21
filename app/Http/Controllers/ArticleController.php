@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Events\ArticlePublished;
+use App\Notifications\ArticlePublishedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 
@@ -12,6 +16,7 @@ class ArticleController extends Controller
     public function __construct()
     {
         $this->middleware('role:admin')->except('index', 'show');
+        $this->middleware('auth');
     }
     public function index()
     {
@@ -52,10 +57,17 @@ class ArticleController extends Controller
         $article->title = $request->input('title');
         $article->content = $request->input('content');
         $article->status = $request->input('status');
-        $article->user_id = 1;
+        $article->user_id = Auth::user()->id;
         $article->slug = Str::slug($article->title);
 
         $article->save();
+
+        if ($article->status === 'published') {
+            event(new ArticlePublished($article));
+            Log::info('Event ArticlePublished dipicu untuk artikel: ' . $article->id);
+            $user = Auth::user();
+            $user->notify(new ArticlePublishedNotification($article));
+        }
 
         if ($request->hasFile('featured_image')) {
             $article
@@ -100,6 +112,12 @@ class ArticleController extends Controller
         $article->slug = Str::slug($article->title);
 
         $article->save();
+
+        if ($article->status === 'published') {
+            event(new ArticlePublished($article));
+            $user = Auth::user();
+            $user->notify(new ArticlePublishedNotification($article));
+        }
 
         if ($request->hasFile('featured_image')) {
             $article->clearMediaCollection('featured_images');

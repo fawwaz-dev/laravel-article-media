@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->enum('status', ['draft', 'published'])->default('draft');
             $table->dateTime('published_at')->nullable();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
         });
     }
 
